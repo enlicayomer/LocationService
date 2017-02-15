@@ -1,0 +1,4 @@
+com\detaysoft\service\User.class
+com\detaysoft\model\LocationInfoModel.class
+com\detaysoft\service\GetLocationService.class
+com\detaysoft\service\UserDao.class

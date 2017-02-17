@@ -2,30 +2,36 @@ package com.detaysoft.model;
 
 public class LocationInfoModel {
 
+	private String corporation;
 	
-	
-	private String latitude;
-	
-	private String longitude;
-	
+	private String tag;
 
-	public String getLatitude() {
-		return latitude;
+	private String bilinmeyenKonum="Bilinmeyen Konum";
+	
+	
+	public String getBilinmeyenKonum() {
+		return bilinmeyenKonum;
 	}
 
-	public void setLatitude(String latitude) {
-		this.latitude = latitude;
+	public void setBilinmeyenKonum(String bilinmeyenKonum) {
+		this.bilinmeyenKonum = bilinmeyenKonum;
 	}
 
-	public String getLongitude() {
-		return longitude;
+	public String getCorporation() {
+		return corporation;
 	}
 
-	public void setLongitude(String longitude) {
-		this.longitude = longitude;
+	public void setCorporation(String corporation) {
+		this.corporation = corporation;
 	}
-	
-	
+
+	public String getTag() {
+		return tag;
+	}
+
+	public void setTag(String tag) {
+		this.tag = tag;
+	}
 	
 	
 }

@@ -8,9 +8,29 @@ public class ReturnLocationInfoModel {
 	private static String locName="";
 
 	/**
-	 * corporation
+	 * corporation name
 	 */
 	private static String corpName="";
+	
+	/**
+	 * corporation tipi
+	 */
+	private static String cptp="";
+	
+	/**
+	 *corporation id 
+	 */
+	private static String cpid="";
+	
+	/**
+	 * active
+	 */
+	private static String active="";
+	
+	/**
+	 * create date
+	 */
+	private static String crdat="";
 	
 	/**
 	 * latitude-enlem bilgisi
@@ -44,6 +64,38 @@ public class ReturnLocationInfoModel {
 	private static String pip="";
 	
 	
+
+	public static String getCptp() {
+		return cptp;
+	}
+
+	public static void setCptp(String cptp) {
+		ReturnLocationInfoModel.cptp = cptp;
+	}
+
+	public static String getCpid() {
+		return cpid;
+	}
+
+	public static void setCpid(String cpid) {
+		ReturnLocationInfoModel.cpid = cpid;
+	}
+
+	public static String getActive() {
+		return active;
+	}
+
+	public static void setActive(String active) {
+		ReturnLocationInfoModel.active = active;
+	}
+
+	public static String getCrdat() {
+		return crdat;
+	}
+
+	public static void setCrdat(String crdat) {
+		ReturnLocationInfoModel.crdat = crdat;
+	}
 
 	public static String getLocName() {
 		return locName;

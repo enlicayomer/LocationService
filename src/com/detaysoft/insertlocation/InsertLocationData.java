@@ -12,18 +12,27 @@ import com.detaysoft.db.DbConnectionManager;
 import com.detaysoft.model.DeviceInfoModel;
 import com.detaysoft.model.GeoLocationModel;
 import com.detaysoft.model.IpInfoModel;
-import com.detaysoft.model.ManuelSetModel;
+import com.detaysoft.model.LocationInfoModel;
 
 public class InsertLocationData {
 
 	private static final Logger Log = LoggerFactory.getLogger(InsertLocationData.class);
 
-	private static final String SELECT_OFTAG = "SELECT * FROM oftag ORDER BY idtag DESC LIMIT 1";
-	private static final String INSERT_INTO_OFTAG = "INSERT INTO oftag(tag,corp) VALUES(?,?)";
-	private static final String INSERT_INTO_OFGPS = "INSERT INTO ofgpsinfo(lat,lon,loc,tag) VALUES(" + ":lat:" + ","
-			+ ":lon:" + ",point(" + ":lat:" + "," + ":lon:" + ")," + ":id:" + ")";
-	private static final String INSERT_INTO_OFWPS = "INSERT INTO ofwpsinfo(bssid,ssid,isconnected,tag) VALUES(?,?,?,?)";
-	private static final String INSERT_INTO_OFIP = "INSERT INTO ofipinfo(pip,tag) VALUES(?,?)";
+	/**
+	 * 
+	 * insert data class
+	 */
+
+	private static final String INSERT_INTO_LC00 = "insert into bn_lc00(locnm,geolat,geolon,geoalt,geopoint,cpnm,cptp,cpid,active,crdat) values("
+			+ "':locname:'" + "," + ":geolat:" + "," + ":geolon:" + "," + ":geoalt:" + ",point(" + ":geolat:" + ","
+			+ ":geolon:" + ")," + "':cpnm:'" + "," + "':cptp:'" + "," + "':cpid:'" + "," + "':active:'" + ","
+			+ "':crdat:'" + ")";
+	private static final String INSERT_INTO_LC01 = "insert into bn_lc01(bssid,ssid,isconnected,geolat,geolon,geoalt,geopoint) values("
+			+ "':bssid:'" + "," + "':ssid:'" + "," + "':isconnected:'" + "," + ":geolat:" + "," + ":geolon:" + ","
+			+ ":geoalt:" + ",point(" + ":geolat:" + "," + ":geolon:" + "))";
+	private static final String INSERT_INTO_LC02 = "insert into bn_lc02(locip,geolat,geolon,geoalt,geopoint) values("
+			+ "':locip:'" + "," + ":geolat:" + "," + ":geolon:" + "," + ":geoalt:" + ",point(" + ":geolat:" + ","
+			+ ":geolon:" + "))";
 
 	static Connection connection;
 	static int getId;
@@ -32,126 +41,87 @@ public class InsertLocationData {
 
 	}
 
-	synchronized public static void insertTagAndCorp() {
+	/**
+	 * 
+	 * insert lc00 metod
+	 */
+	synchronized public static void insrt_lc00() {
 		try {
 			connection = DbConnectionManager.getConnection();
+
 		} catch (Exception e) {
-			Log.error("insert wps-veri tabanina baglanirken hata: " + e);
+			Log.error("insert bn_lc00 connect db: " + e);
 		}
-
 		try {
-			PreparedStatement preparedStatement = connection.prepareStatement(INSERT_INTO_OFTAG);
-			preparedStatement.setString(1, ManuelSetModel.getTag());
-			preparedStatement.setString(2, ManuelSetModel.getCorporation());
-			preparedStatement.executeUpdate();
-			ResultSet rs = connection.createStatement().executeQuery(SELECT_OFTAG);
-			while (rs.next())
-				getId = rs.getInt("idtag");
-
+			connection.createStatement().executeUpdate(INSERT_INTO_LC00
+					.replace(":locname:", LocationInfoModel.getLocname())
+					.replaceAll(":geolat:", GeoLocationModel.getLatitude())
+					.replaceAll(":geolon:", GeoLocationModel.getLongitude())
+					.replaceAll(":geoalt:", GeoLocationModel.getAltitude())
+					.replace(":cpnm:", LocationInfoModel.getCpnm()).replace(":cptp:", LocationInfoModel.getCptp())
+					.replace(":cpid:", LocationInfoModel.getCpid()).replace(":active:", LocationInfoModel.getActive()).replace(":crdat:", LocationInfoModel.getCrdat()));
 		} catch (Exception e) {
-			Log.error("insert tag and corp error: " + e);
-		} finally {
-			try {
-				connection.close();
-			} catch (Exception e) {
-
-				Log.error("wps insert islemi-baglanti kapatilirken hata: " + e);
-
-			}
-
-		}
-	}
-
-	synchronized public static void insertGps() {
-		try {
-			connection = DbConnectionManager.getConnection();
-		} catch (Exception e) {
-			Log.error("insert wps-veri tabanina baglanirken hata: " + e);
-		}
-
-		try {
-
-			connection.createStatement().executeUpdate(INSERT_INTO_OFGPS.replaceAll(":lat:", String.valueOf(GeoLocationModel.getLatitude()))
-					.replaceAll(":lon:", String.valueOf(GeoLocationModel.getLongitude())).replace(":id:", String.valueOf(getId)));
-
-		} catch (Exception e) {
-
-			Log.error("wps insert islemi basarisiz: " + e);
-
-		} finally {
-			try {
-				connection.close();
-			} catch (Exception e) {
-
-				Log.error("gps insert islemi-baglanti kapatilirken hata: " + e);
-
-			}
-
+			Log.error("execute insert bn_lc00: " + e);
 		}
 
 	}
 
-	synchronized public static void insertWps(List<DeviceInfoModel> deviceInfoModels) {
+	/**
+	 * 
+	 * insert bn_lc01 metod
+	 */
+	public static void insrt_lc01(List<DeviceInfoModel> deviceInfoModels) {
 		try {
 			connection = DbConnectionManager.getConnection();
+
 		} catch (Exception e) {
-			Log.error("select wps-veri tabanina baglanirken hata: " + e);
+			Log.error("insert bn_lc01 connect db: " + e);
 		}
 		try {
-			for(DeviceInfoModel model : deviceInfoModels){
-				System.out.println(model.getDeviceBssid()+" "+model.getDeviceSsid()+" "+model.getIsConnected()+" "+model.getSignalRate());
-			PreparedStatement preparedStatement = connection.prepareStatement(INSERT_INTO_OFWPS);
-			preparedStatement.setString(1, model.getDeviceBssid());
-			preparedStatement.setString(2, model.getDeviceSsid());
-			preparedStatement.setString(3, model.getIsConnected());
-			preparedStatement.setInt(4, getId);
+			for (DeviceInfoModel model : deviceInfoModels) {
+			connection.createStatement()
+					.executeUpdate(INSERT_INTO_LC01.replace(":bssid:", model.getDeviceBssid())
+							.replace(":ssid:", model.getDeviceSsid())
+							.replace(":isconnected:", model.getIsConnected())
+							.replaceAll(":geolat:", GeoLocationModel.getLatitude())
+							.replaceAll(":geolon:", GeoLocationModel.getLongitude())
+							.replaceAll(":geoalt:", GeoLocationModel.getAltitude()));
 
-			preparedStatement.executeUpdate();
 			}
 		} catch (Exception e) {
 
-			Log.error("wps insert islemi basarisiz: " + e);
-
-		} finally {
-			try {
-				connection.close();
-			} catch (Exception e) {
-
-				Log.error("wps insert islemi-baglanti kapatilirken hata: " + e);
-
-			}
-
+			Log.error("execute insert bn_lc01: " + e);
 		}
 	}
 
-	synchronized public static void insertIp() {
+	/**
+	 * 
+	 * insert bn_lc02 metod
+	 */
+	public static void insrt_lc02() {
 		try {
 			connection = DbConnectionManager.getConnection();
+
 		} catch (Exception e) {
-			Log.error("insert wps-veri tabanina baglanirken hata: " + e);
+			Log.error("insert bn_lc02 connect db: " + e);
 		}
-		
+
 
 		try {
 
-			PreparedStatement preparedStatement = connection.prepareStatement(INSERT_INTO_OFIP);
-			preparedStatement.setString(1, IpInfoModel.getPublicIp());
-			preparedStatement.setInt(2, getId);
-
-			preparedStatement.executeUpdate();
+			connection.createStatement()
+					.executeUpdate(INSERT_INTO_LC02.replace(":locip:", IpInfoModel.getLocIp())
+							.replaceAll(":geolat:", GeoLocationModel.getLatitude())
+							.replaceAll(":geolon:", GeoLocationModel.getLongitude())
+							.replaceAll(":geoalt:", GeoLocationModel.getAltitude()));
 
 		} catch (Exception e) {
-			Log.error("ip insert islemi basarisiz: " + e);
-		} finally {
-			try {
-				connection.close();
-			} catch (Exception e) {
-
-				Log.error("ip insert islemi-baglanti kapatilirken hata: " + e);
-
-			}
+			Log.error("execute insert bn_lc02: " + e);
 
 		}
+
 	}
+
+
 
 }

@@ -14,7 +14,7 @@ import com.detaysoft.insertlocation.InsertLocationData;
 import com.detaysoft.model.DeviceInfoModel;
 import com.detaysoft.model.GeoLocationModel;
 import com.detaysoft.model.IpInfoModel;
-import com.detaysoft.model.ManuelSetModel;
+import com.detaysoft.model.LocationInfoModel;
 import com.detaysoft.model.ReturnLocationInfoModel;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -29,17 +29,20 @@ public class CastingData extends LocationModuleAbstract {
 	List<DeviceInfoModel> deviceList;
 	double lat, lon;
 	String pip;
-	
+
 	/**
-	 * 3. aþama 
+	 * 3. aþama
 	 * 
-	 * Yapýcý metoda gelen json paketindeki verilere göre kontrol yapýlýr.
-	 * "get" ise veri tabanýndan sorgulama yapýlarak sonuç dönderilir.
-	 * "set" ise veri tabanýna kayýt yapýlýr.
+	 * Yapýcý metoda gelen json paketindeki verilere göre kontrol yapýlýr. "get"
+	 * ise veri tabanýndan sorgulama yapýlarak sonuç dönderilir. "set" ise veri
+	 * tabanýna kayýt yapýlýr.
 	 * 
-	 * gelen paket "get" ve veri tabanýnda kayýtlý deðilse locName deðerine "0" yüklenerek sonuç dönderilir.
+	 * gelen paket "get" ve veri tabanýnda kayýtlý deðilse locName deðerine "0"
+	 * yüklenerek sonuç dönderilir.
 	 * 
-	 * gelen paket "set" ve "locname", "corpname" alanlarý boþ ise boþ hatasý Log'lanýr.
+	 * gelen paket "set" ve "locname", "corpname" alanlarý boþ ise boþ hatasý
+	 * Log'lanýr.
+	 * 
 	 * @param jsonData
 	 */
 	public CastingData(String jsonData) {
@@ -47,52 +50,43 @@ public class CastingData extends LocationModuleAbstract {
 		this.jsonData = jsonData;
 		parseData();
 
-		if(type().equals("get")){
-		
-		if (getGPSInformation()) {
-			GetGpsLocation.selecetGpsLocation(Double.parseDouble(GeoLocationModel.getLatitude()), Double.parseDouble(GeoLocationModel.getLongitude()));
-		} else if (getDeviceInformations()) {
-			GetWpsLocation.selectWpsLocation(deviceList);
-		} else if (getIpInformation()) {
-			GetIpLocation.selectIpLocation(IpInfoModel.getPublicIp());
-		} else
-		{
-			ReturnLocationInfoModel.setLocName("0");
-		}
-		}
-		else if(type().equals("set"))
-		{
-			if(manuelTagAndCorporation()){
-				InsertLocationData.insertTagAndCorp();
-			if(getGPSInformation())
-			{
-				InsertLocationData.insertGps();
+		if (type().equals("get")) {
+
+			if (getGPSInformation()) {
+				GetGpsLocation.selecetGpsLocation(Double.parseDouble(GeoLocationModel.getLatitude()),
+						Double.parseDouble(GeoLocationModel.getLongitude()));
+			} else if (getDeviceInformations()) {
+				GetWpsLocation.selectWpsLocation(deviceList);
+			} else if (getIpInformation()) {
+				GetIpLocation.selectIpLocation(IpInfoModel.getLocIp());
+			} else {
+				ReturnLocationInfoModel.setLocName("0");
 			}
-			if(getDeviceInformations())
-			{
-				InsertLocationData.insertWps(deviceList);
-			}
-			if(getIpInformation())
-			{
-				InsertLocationData.insertIp();
-			}
-			}
-			else {
-				Log.error("LocName ve corpName boþ geldi.");
+		} else if (type().equals("set")) {
+			if (locInfo()) {
+				if (getGPSInformation()) {
+					InsertLocationData.insrt_lc00();
+				}
+				if (getDeviceInformations()) {
+					InsertLocationData.insrt_lc01(deviceList);
+				}
+				if (getIpInformation()) {
+					InsertLocationData.insrt_lc02();
+				}
+			} else {
+				Log.error("beklenmeyen bir hata.");
 			}
 		}
-			
+
 	}
 
 	private void parseData() {
 
-		
 		Log.info("gelen base64 sifresi decode: " + jsonData);
 		infoObject = getProperty(new String(jsonData));
 	}
-	
-	public String type()
-	{
+
+	public String type() {
 		return getString(infoObject.get("type"));
 	}
 
@@ -135,9 +129,6 @@ public class CastingData extends LocationModuleAbstract {
 			if (deviceIsConnected.equals("X"))
 				isConnectedDeviceId = deviceBssid;
 
-			String deviceSignalRate = getString(deviceInfoObject.getAsJsonObject().get("signalrate"));
-			deviceInfoModel.setSignalRate(deviceSignalRate);
-
 			deviceInfoList.add(deviceInfoModel);
 
 			if (deviceBssid.isEmpty())
@@ -158,27 +149,40 @@ public class CastingData extends LocationModuleAbstract {
 		JsonObject ipInfoModelJsonObject = infoObject.getAsJsonObject("ipinfo");
 
 		// Local ip adresi
-		String publicIp = getString(ipInfoModelJsonObject.get("pip"));
-		IpInfoModel.setPublicIp(publicIp);
-		if (!publicIp.isEmpty())
+		String locIp = getString(ipInfoModelJsonObject.get("locip"));
+		IpInfoModel.setLocIp(locIp);
+		if (!locIp.isEmpty())
 			isIpInformation = true;
 		return isIpInformation;
 	}
 
-	public boolean manuelTagAndCorporation()
-	{
-		boolean isControl=false;
-		JsonObject manuelTagInfo=infoObject.getAsJsonObject("locinfo");
+	
+	/**
+	 * 
+	 * locInfo metod
+	 * @return true
+	 */
+	public boolean locInfo() {
 		
-		String locName=getString(manuelTagInfo.get("locname"));
-		String corpName=getString(manuelTagInfo.get("corpname"));
+		JsonObject locInfo = infoObject.getAsJsonObject("locinfo");
+
+		String locname = getString(locInfo.get("locname"));
+		String cpnm = getString(locInfo.get("cpnm"));
+		String cptp = getString(locInfo.get("cptp"));
+		String cpid = getString(locInfo.get("cpid"));
+		String active = getString(locInfo.get("active"));
+		String crdat = getString(locInfo.get("crdat"));
+
+		LocationInfoModel.setLocname(locname);
+		LocationInfoModel.setCpnm(cpnm);
+		LocationInfoModel.setCptp(cptp);
+		LocationInfoModel.setCpid(cpid);
+		LocationInfoModel.setActive(active);
+		LocationInfoModel.setCrdat(crdat);
+
 		
-		ManuelSetModel.setCorporation(corpName);
-		ManuelSetModel.setTag(locName);
-		if(!locName.isEmpty() || !corpName.isEmpty())
-			isControl=true;
-		
-		return isControl;
+
+		return true;
 	}
 
 }

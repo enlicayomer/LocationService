@@ -10,6 +10,18 @@ public class GeoLocationModel {
 	 * boylam bilgisi
 	 */
 	private static String longitude;
+	
+	/*
+	 * yükseklik bilgisi
+	 */
+	private static String altitude="0.00000";
+	
+	public static String getAltitude() {
+		return altitude;
+	}
+	public static void setAltitude(String altitude) {
+		GeoLocationModel.altitude = altitude;
+	}
 	public static String getLatitude() {
 		return latitude;
 	}

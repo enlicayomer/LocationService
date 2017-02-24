@@ -1,14 +1,15 @@
 com\detaysoft\model\IpInfoModel.class
 com\detaysoft\util\CastingData.class
-com\detaysoft\model\ManuelSetModel.class
 com\detaysoft\model\ReturnLocationInfoModel.class
 com\detaysoft\model\LocationInfoModel.class
 com\detaysoft\util\Base64.class
+com\detaysoft\ws\SetLocationService.class
 com\detaysoft\ws\GetLocationService.class
 com\detaysoft\model\DeviceInfoModel.class
 com\detaysoft\getlocation\GetGpsLocation.class
 com\detaysoft\util\Base64$OutputStream.class
 com\detaysoft\getlocation\GetWpsLocation.class
+com\detaysoft\util\ReturnDataPackage.class
 com\detaysoft\util\LocationModuleAbstract.class
 com\detaysoft\getlocation\GetIpLocation.class
 com\detaysoft\db\DbConnectionManager.class

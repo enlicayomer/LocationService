@@ -13,7 +13,7 @@ public class GetGpsLocation {
 
 	private static final Logger Log = LoggerFactory.getLogger(GetIpLocation.class);
 
-	private static final String SELECT_GPSINFO = "select locnm,cpnm,geolat,geolon,"
+	private static final String SELECT_GPSINFO = "select locnm,cpnm,cptp,cpid,active,crdat,geolat,geolon,"
 			+ "glength(LineStringFromWKB(linestring(geopoint,point(" + ":lat:" + "," + ":lon:" + "))))*100 "
 			+ "as euclidean," + "6378.1*2*asin(sqrt(power(sin(radians(" + ":lat:" + "-geolat)/2),2)+"
 			+ "cos(radians(" + ":lat:" + "))*cos(radians(geolat))*power(sin((radians(" + ":lon:"
@@ -34,7 +34,7 @@ public class GetGpsLocation {
 	 * @param lon
 	 * @return
 	 */
-	public static boolean selecetGpsLocation(double lat, double lon) {
+	public static String selecetGpsLocation(double lat, double lon) {
 		
 		try {
 			connection = DbConnectionManager.getConnection();
@@ -54,6 +54,10 @@ public class GetGpsLocation {
 				ReturnLocationInfoModel.setLocName(resultSet.getString("locnm"));
 				ReturnLocationInfoModel.setLatitude(resultSet.getString("geolat"));
 				ReturnLocationInfoModel.setLongitude(resultSet.getString("geolon"));
+				ReturnLocationInfoModel.setCptp(resultSet.getString("cptp"));
+				ReturnLocationInfoModel.setCpid(resultSet.getString("cpid"));
+				ReturnLocationInfoModel.setActive(resultSet.getString("active"));
+				ReturnLocationInfoModel.setCrdat(resultSet.getString("crdat"));
 			}
 		} catch (Exception e) {
 			Log.error("select gps location hata olustu: " + e);
@@ -64,7 +68,7 @@ public class GetGpsLocation {
 				Log.error("select gps-baglanti kapatilirken hata: " + e);
 			}
 		}
-		return isSelecet;
+		return ReturnLocationInfoModel.getLocName();
 	}
 
 }

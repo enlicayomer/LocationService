@@ -5,22 +5,17 @@ public class DeviceInfoModel {
 	/*
 	 * cihaz bssid
 	 */
-	private String deviceBssid;
+	private  String deviceBssid;
 
 	/*
 	 * cihaz ssid
 	 */
-	private String deviceSsid;
+	private  String deviceSsid;
 
 	/*
 	 * bagli cihaz
 	 */
-	private String isConnected;
-
-	/*
-	 * cihaz sinyali
-	 */
-	private String signalRate;
+	private  String isConnected;
 
 	public String getDeviceBssid() {
 		return deviceBssid;
@@ -46,14 +41,9 @@ public class DeviceInfoModel {
 		this.isConnected = isConnected;
 	}
 
-	public String getSignalRate() {
-		return signalRate;
-	}
 
-	public void setSignalRate(String signalRate) {
-		this.signalRate = signalRate;
-	}
 	
+
 	
 
 }

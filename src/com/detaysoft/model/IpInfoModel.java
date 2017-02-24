@@ -5,14 +5,14 @@ public class IpInfoModel {
 	/*
 	 * Kiþi genel ip
 	 */
-	private static String publicIp;
+	private static String locIp;
 
-	public static String getPublicIp() {
-		return publicIp;
+	public static String getLocIp() {
+		return locIp;
 	}
 
-	public static void setPublicIp(String publicIp) {
-		IpInfoModel.publicIp = publicIp;
+	public static void setLocIp(String locIp) {
+		IpInfoModel.locIp = locIp;
 	}
 	
 	

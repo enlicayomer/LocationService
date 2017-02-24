@@ -10,27 +10,28 @@ import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
+import com.detaysoft.model.LocationInfoModel;
+import com.detaysoft.model.ReturnLocationInfoModel;
 import com.detaysoft.util.Base64ToJson;
 import com.detaysoft.util.CastingData;
 import com.detaysoft.util.ReturnDataPackage;
 
-@Path("/getloc")
-public class GetLocationService {
-	
+@Path("/setloc")
+public class SetLocationService {
+
 	private static final Logger Log = LoggerFactory.getLogger(CastingData.class);
 
 	@GET
-	@Path("{getdata}")
+	@Path("{setdata}")
 	@Produces(MediaType.TEXT_PLAIN)
-	public Response getLocation(@PathParam("getdata") String lat) {
+	public Response getLocation(@PathParam("setdata") String lat) {
 		try{
 		Base64ToJson.toJson(lat);
 		}catch(Exception e)
 		{
-			Log.error("getloc service error: "+e);
+			Log.error("setloc service error: "+e);
 		}
-		return Response.ok(ReturnDataPackage.returnJson()).build();
+		return Response.status(201).build();
 	}
 
 }

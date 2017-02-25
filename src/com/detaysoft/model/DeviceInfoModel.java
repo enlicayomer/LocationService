@@ -2,20 +2,14 @@ package com.detaysoft.model;
 
 public class DeviceInfoModel {
 
-	/*
-	 * cihaz bssid
-	 */
-	private  String deviceBssid;
+	// cihaz bssid
+	private String deviceBssid;
 
-	/*
-	 * cihaz ssid
-	 */
-	private  String deviceSsid;
+	// cihaz ssid
+	private String deviceSsid;
 
-	/*
-	 * bagli cihaz
-	 */
-	private  String isConnected;
+	// bagli cihaz
+	private String isConnected;
 
 	public String getDeviceBssid() {
 		return deviceBssid;
@@ -40,10 +34,5 @@ public class DeviceInfoModel {
 	public void setIsConnected(String isConnected) {
 		this.isConnected = isConnected;
 	}
-
-
-	
-
-	
 
 }

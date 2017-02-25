@@ -3,32 +3,27 @@ package com.detaysoft.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.detaysoft.util.LocationModuleAbstract;
-import com.detaysoft.getlocation.GetGpsLocation;
-import com.detaysoft.getlocation.GetIpLocation;
-import com.detaysoft.getlocation.GetWpsLocation;
-import com.detaysoft.insertlocation.InsertLocationData;
+import com.detaysoft.getlocation.LocationDatabaseProvider;
 import com.detaysoft.model.DeviceInfoModel;
 import com.detaysoft.model.GeoLocationModel;
 import com.detaysoft.model.IpInfoModel;
-import com.detaysoft.model.LocationInfoModel;
 import com.detaysoft.model.ReturnLocationInfoModel;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.sun.jersey.core.util.Base64;
 
 public class CastingData extends LocationModuleAbstract {
 
-	private static final Logger Log = LoggerFactory.getLogger(CastingData.class);
+	private LocationDatabaseProvider databaseProvider = null;
 
-	String jsonData;
-	JsonObject infoObject;
 	List<DeviceInfoModel> deviceList;
 	double lat, lon;
 	String pip;
+
+	public CastingData() {
+		databaseProvider = new LocationDatabaseProvider();
+	}
 
 	/**
 	 * 3. aþama
@@ -45,74 +40,76 @@ public class CastingData extends LocationModuleAbstract {
 	 * 
 	 * @param jsonData
 	 */
-	public CastingData(String jsonData) {
+	public String processLocation(String jsonString) {
+		JsonObject infoObject = getProperty(new String(jsonString));
+		String type = getString(infoObject.get("type"));
 
-		this.jsonData = jsonData;
-		parseData();
+		GeoLocationModel geoLocationModel = new GeoLocationModel();
+		IpInfoModel ipInfoModel = new IpInfoModel();
+		ReturnLocationInfoModel returnInfoModel = new ReturnLocationInfoModel();
 
-		if (type().equals("get")) {
+		if (type.equals("get")) {
 
-			if (getGPSInformation()) {
-				GetGpsLocation.selecetGpsLocation(Double.parseDouble(GeoLocationModel.getLatitude()),
-						Double.parseDouble(GeoLocationModel.getLongitude()));
-			} else if (getDeviceInformations()) {
-				GetWpsLocation.selectWpsLocation(deviceList);
-			} else if (getIpInformation()) {
-				GetIpLocation.selectIpLocation(IpInfoModel.getLocIp());
+			if (getGPSInformation(infoObject, geoLocationModel)) {
+
+				databaseProvider.selecetGpsLocation(Double.parseDouble(geoLocationModel.getLatitude()),
+						Double.parseDouble(geoLocationModel.getLongitude()), returnInfoModel);
+
+			} else if (getDeviceInformations(infoObject)) {
+
+				databaseProvider.selectWpsLocation(deviceList, returnInfoModel);
+
+			} else if (getIpInformation(infoObject, ipInfoModel)) {
+				databaseProvider.selectIpLocation(ipInfoModel.getLocIp(), returnInfoModel);
+
 			} else {
-				ReturnLocationInfoModel.setLocName("0");
+				returnInfoModel.setLocName("0");
 			}
-		} else if (type().equals("set")) {
-			if (locInfo()) {
-				if (getGPSInformation()) {
-					InsertLocationData.insrt_lc00();
+		} else if (type.equals("set")) {
+			ReturnLocationInfoModel infoModel = locInfo(infoObject);
+
+			if (infoModel != null) {
+				if (getGPSInformation(infoObject, geoLocationModel)) {
+					databaseProvider.insertLC00(infoModel, geoLocationModel);
 				}
-				if (getDeviceInformations()) {
-					InsertLocationData.insrt_lc01(deviceList);
+				if (getDeviceInformations(infoObject)) {
+					databaseProvider.insertLC01(deviceList, geoLocationModel);
 				}
-				if (getIpInformation()) {
-					InsertLocationData.insrt_lc02();
+				if (getIpInformation(infoObject, ipInfoModel)) {
+					databaseProvider.insertLC02(geoLocationModel, ipInfoModel);
 				}
-			} else {
-				Log.error("beklenmeyen bir hata.");
 			}
 		}
 
+		return returnData(returnInfoModel);
 	}
 
-	private void parseData() {
-
-		Log.info("gelen base64 sifresi decode: " + jsonData);
-		infoObject = getProperty(new String(jsonData));
-	}
-
-	public String type() {
-		return getString(infoObject.get("type"));
-	}
-
-	private boolean getGPSInformation() {
+	private boolean getGPSInformation(JsonObject infoObject, GeoLocationModel geoLocationModel) {
 		boolean isGPSInformation = false;
 		JsonObject geolocation = infoObject.getAsJsonObject("geolocation");
 
 		String latitude = getString(geolocation.get("latitude"));
 
 		String longitude = getString(geolocation.get("longitude"));
-
-		GeoLocationModel.setLatitude(latitude);
-		GeoLocationModel.setLongitude(longitude);
+		String altitude = getString(geolocation.get("altitude"));
+		geoLocationModel.setLatitude(latitude);
+		geoLocationModel.setLongitude(longitude);
+		geoLocationModel.setAltitude(altitude);
 		if (!latitude.isEmpty() && !longitude.isEmpty())
 			isGPSInformation = true;
+		if(altitude.isEmpty())
+			geoLocationModel.setAltitude("0.000");
+
 		return isGPSInformation;
 	}
 
-	private boolean getDeviceInformations() {
+	private boolean getDeviceInformations(JsonObject infoObject) {
 		boolean isDeviceInformation = false;
 		// cihaz bilgileri
 		JsonArray locationInfoObject = infoObject.getAsJsonArray("deviceinfolist");
 		List<DeviceInfoModel> deviceInfoList = new ArrayList<DeviceInfoModel>();
 
 		// bagli cihaz
-		String isConnectedDeviceId = "";
 		for (JsonElement deviceInfoObject : locationInfoObject) {
 
 			DeviceInfoModel deviceInfoModel = new DeviceInfoModel();
@@ -126,8 +123,6 @@ public class CastingData extends LocationModuleAbstract {
 
 			String deviceIsConnected = getString(deviceInfoObject.getAsJsonObject().get("isconnected"));
 			deviceInfoModel.setIsConnected(deviceIsConnected);
-			if (deviceIsConnected.equals("X"))
-				isConnectedDeviceId = deviceBssid;
 
 			deviceInfoList.add(deviceInfoModel);
 
@@ -144,45 +139,59 @@ public class CastingData extends LocationModuleAbstract {
 		return isDeviceInformation;
 	}
 
-	public boolean getIpInformation() {
+	public boolean getIpInformation(JsonObject infoObject, IpInfoModel ipInfoModel) {
 		boolean isIpInformation = false;
 		JsonObject ipInfoModelJsonObject = infoObject.getAsJsonObject("ipinfo");
 
 		// Local ip adresi
 		String locIp = getString(ipInfoModelJsonObject.get("locip"));
-		IpInfoModel.setLocIp(locIp);
+		ipInfoModel.setLocIp(locIp);
 		if (!locIp.isEmpty())
 			isIpInformation = true;
+
 		return isIpInformation;
 	}
 
-	
-	/**
-	 * 
-	 * locInfo metod
-	 * @return true
-	 */
-	public boolean locInfo() {
-		
-		JsonObject locInfo = infoObject.getAsJsonObject("locinfo");
+	public ReturnLocationInfoModel locInfo(JsonObject infoObject) {
+		try {
+			JsonObject locInfo = infoObject.getAsJsonObject("locinfo");
+			ReturnLocationInfoModel infoModel = new ReturnLocationInfoModel();
 
-		String locname = getString(locInfo.get("locname"));
-		String cpnm = getString(locInfo.get("cpnm"));
-		String cptp = getString(locInfo.get("cptp"));
-		String cpid = getString(locInfo.get("cpid"));
-		String active = getString(locInfo.get("active"));
-		String crdat = getString(locInfo.get("crdat"));
+			String locname = getString(locInfo.get("locname"));
+			String cpnm = getString(locInfo.get("cpnm"));
+			String cptp = getString(locInfo.get("cptp"));
+			String cpid = getString(locInfo.get("cpid"));
+			String active = getString(locInfo.get("active"));
+			String crdat = getString(locInfo.get("crdat"));
 
-		LocationInfoModel.setLocname(locname);
-		LocationInfoModel.setCpnm(cpnm);
-		LocationInfoModel.setCptp(cptp);
-		LocationInfoModel.setCpid(cpid);
-		LocationInfoModel.setActive(active);
-		LocationInfoModel.setCrdat(crdat);
+			infoModel.setLocName(locname);
+			infoModel.setCorpName(cpnm);
+			infoModel.setCptp(cptp);
+			infoModel.setCpid(cpid);
+			infoModel.setActive(active);
+			infoModel.setCrdat(crdat);
 
-		
-
-		return true;
+			return infoModel;
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
+	private String returnData(ReturnLocationInfoModel infoModel) {
+		JsonObject jsonObject = new JsonObject();
+
+		jsonObject.addProperty("locname", infoModel.getLocName());
+		jsonObject.addProperty("cpnm", infoModel.getCorpName());
+		jsonObject.addProperty("cptp", infoModel.getCptp());
+		jsonObject.addProperty("cpid", infoModel.getCpid());
+		jsonObject.addProperty("active", infoModel.getActive());
+		jsonObject.addProperty("crdat", infoModel.getCrdat());
+		jsonObject.addProperty("lat", infoModel.getLatitude());
+		jsonObject.addProperty("lon", infoModel.getLongitude());
+		jsonObject.addProperty("bssid", infoModel.getBssid());
+
+		String base64 = new String(Base64.encode((jsonObject.toString())));
+
+		return base64;
+	}
 }

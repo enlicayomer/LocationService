@@ -1,24 +1,16 @@
 package com.detaysoft.model;
 
 public class IpInfoModel {
-	
-	/*
-	 * Kiþi genel ip
-	 */
-	private static String locIp;
 
-	public static String getLocIp() {
+	// Kiþi genel ip
+	private String locIp;
+
+	public String getLocIp() {
 		return locIp;
 	}
 
-	public static void setLocIp(String locIp) {
-		IpInfoModel.locIp = locIp;
+	public void setLocIp(String locIp) {
+		this.locIp = locIp;
 	}
-	
-	
 
-	
-	
-	
-	
 }

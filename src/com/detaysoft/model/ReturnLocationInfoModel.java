@@ -2,170 +2,136 @@ package com.detaysoft.model;
 
 public class ReturnLocationInfoModel {
 
-	/**
-	 * etiket
-	 */
-	private static String locName="";
+	// etiket
+	private String locName;
 
-	/**
-	 * corporation name
-	 */
-	private static String corpName="";
-	
-	/**
-	 * corporation tipi
-	 */
-	private static String cptp="";
-	
-	/**
-	 *corporation id 
-	 */
-	private static String cpid="";
-	
-	/**
-	 * active
-	 */
-	private static String active="";
-	
-	/**
-	 * create date
-	 */
-	private static String crdat="";
-	
-	/**
-	 * latitude-enlem bilgisi
-	 */
-	private static String latitude="";
-	
-	/**
-	 * longitude-boylam bilgisi
-	 */
-	private static String longitude="";
-	
-	/**
-	 * bssid
-	 */
-	
-	private static String bssid="";
-	
-	/**
-	 * ssid
-	 */
-	private static String ssid="";
-	
-	/**
-	 * isConncected
-	 */
-	private static String isConncted="";
-	
-	/**
-	 * public ip
-	 */
-	private static String pip="";
-	
-	
+	// corporation name
+	private String corpName;
 
-	public static String getCptp() {
-		return cptp;
-	}
+	// corporation tipi
+	private String cptp;
 
-	public static void setCptp(String cptp) {
-		ReturnLocationInfoModel.cptp = cptp;
-	}
+	// corporation id
+	private String cpid;
 
-	public static String getCpid() {
-		return cpid;
-	}
+	// active
+	private String active;
 
-	public static void setCpid(String cpid) {
-		ReturnLocationInfoModel.cpid = cpid;
-	}
+	// create date
+	private String crdat;
 
-	public static String getActive() {
-		return active;
-	}
+	// latitude-enlem bilgisi
+	private String latitude;
 
-	public static void setActive(String active) {
-		ReturnLocationInfoModel.active = active;
-	}
+	// longitude-boylam bilgisi
+	private String longitude;
 
-	public static String getCrdat() {
-		return crdat;
-	}
+	// bssid
+	private String bssid;
 
-	public static void setCrdat(String crdat) {
-		ReturnLocationInfoModel.crdat = crdat;
-	}
+	// ssid
+	private String ssid;
 
-	public static String getLocName() {
+	// isConncected
+	private String isConncted;
+
+	// public ip
+	private String pip;
+
+	public String getLocName() {
 		return locName;
 	}
 
-	public static void setLocName(String locName) {
-		ReturnLocationInfoModel.locName = locName;
+	public void setLocName(String locName) {
+		this.locName = locName;
 	}
 
-	public static String getCorpName() {
+	public String getCorpName() {
 		return corpName;
 	}
 
-	public static void setCorpName(String corpName) {
-		ReturnLocationInfoModel.corpName = corpName;
+	public void setCorpName(String corpName) {
+		this.corpName = corpName;
 	}
 
-	public static String getLatitude() {
+	public String getCptp() {
+		return cptp;
+	}
+
+	public void setCptp(String cptp) {
+		this.cptp = cptp;
+	}
+
+	public String getCpid() {
+		return cpid;
+	}
+
+	public void setCpid(String cpid) {
+		this.cpid = cpid;
+	}
+
+	public String getActive() {
+		return active;
+	}
+
+	public void setActive(String active) {
+		this.active = active;
+	}
+
+	public String getCrdat() {
+		return crdat;
+	}
+
+	public void setCrdat(String crdat) {
+		this.crdat = crdat;
+	}
+
+	public String getLatitude() {
 		return latitude;
 	}
 
-	public static void setLatitude(String latitude) {
-		ReturnLocationInfoModel.latitude = latitude;
+	public void setLatitude(String latitude) {
+		this.latitude = latitude;
 	}
 
-	public static String getLongitude() {
+	public String getLongitude() {
 		return longitude;
 	}
 
-	public static void setLongitude(String longitude) {
-		ReturnLocationInfoModel.longitude = longitude;
+	public void setLongitude(String longitude) {
+		this.longitude = longitude;
 	}
 
-	public static String getBssid() {
+	public String getBssid() {
 		return bssid;
 	}
 
-	public static void setBssid(String bssid) {
-		ReturnLocationInfoModel.bssid = bssid;
+	public void setBssid(String bssid) {
+		this.bssid = bssid;
 	}
 
-	public static String getSsid() {
+	public String getSsid() {
 		return ssid;
 	}
 
-	public static void setSsid(String ssid) {
-		ReturnLocationInfoModel.ssid = ssid;
+	public void setSsid(String ssid) {
+		this.ssid = ssid;
 	}
 
-	
-	public static String getIsConncted() {
+	public String getIsConncted() {
 		return isConncted;
 	}
 
-	public static void setIsConncted(String isConncted) {
-		ReturnLocationInfoModel.isConncted = isConncted;
+	public void setIsConncted(String isConncted) {
+		this.isConncted = isConncted;
 	}
 
-	public static String getPip() {
+	public String getPip() {
 		return pip;
 	}
 
-	public static void setPip(String pip) {
-		ReturnLocationInfoModel.pip = pip;
+	public void setPip(String pip) {
+		this.pip = pip;
 	}
 
-	
-	
-
-
-	
-	
 }

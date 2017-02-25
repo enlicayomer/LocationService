@@ -2,38 +2,40 @@ package com.detaysoft.model;
 
 public class GeoLocationModel {
 
-	/*
-	 * enlem bilgisi
-	 */
-	private static String latitude;
-	/*
-	 * boylam bilgisi
-	 */
-	private static String longitude;
-	
-	/*
-	 * yükseklik bilgisi
-	 */
-	private static String altitude="0.00000";
-	
-	public static String getAltitude() {
-		return altitude;
-	}
-	public static void setAltitude(String altitude) {
-		GeoLocationModel.altitude = altitude;
-	}
-	public static String getLatitude() {
+	// enlem bilgisi
+	private String latitude;
+
+	// boylam bilgisi
+	private String longitude;
+
+	// yükseklik bilgisi
+	private String altitude;
+
+	public String getLatitude() {
 		return latitude;
 	}
-	public static void setLatitude(String latitude) {
-		GeoLocationModel.latitude = latitude;
-	}
-	public static String getLongitude() {
-		return longitude;
-	}
-	public static void setLongitude(String longitude) {
-		GeoLocationModel.longitude = longitude;
+
+	public void setLatitude(String latitude) {
+		if (latitude.equals(""))
+			latitude = "0.00000";
+		
+		this.latitude = latitude;
 	}
 
-	
+	public String getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(String longitude) {
+		this.longitude = longitude;
+	}
+
+	public String getAltitude() {
+		return altitude;
+	}
+
+	public void setAltitude(String altitude) {
+		this.altitude = altitude;
+	}
+
 }

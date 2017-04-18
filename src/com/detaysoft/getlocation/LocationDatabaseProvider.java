@@ -20,11 +20,7 @@ public class LocationDatabaseProvider {
 
 	private static final Logger Log = LoggerFactory.getLogger(LocationDatabaseProvider.class);
 
-	private static final String SELECT_GPSINFO = "select locnm,cpnm,cptp,cpid,active,crdat,geolat,geolon,"
-			+ "glength(LineStringFromWKB(linestring(geopoint,point(" + ":lat:" + "," + ":lon:" + "))))*100 "
-			+ "as euclidean," + "6378.1*2*asin(sqrt(power(sin(radians(" + ":lat:" + "-geolat)/2),2)+" + "cos(radians("
-			+ ":lat:" + "))*cos(radians(geolat))*power(sin((radians(" + ":lon:" + "-geolon))/2),2))) as haversine "
-			+ "from bn_lc00  having euclidean <1 order by euclidean asc limit 1";
+	private static final String SELECT_GPSINFO = ".......................";
 
 	private static final String SELECT_BNLC02 = "select * from bn_lc02 where locip=" + "':locip:'";
 
